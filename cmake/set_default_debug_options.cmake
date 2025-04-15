@@ -38,8 +38,6 @@ function(set_default_debug_options)
     set(COMPILER_IS_GCC TRUE)
   elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(COMPILER_IS_CLANG TRUE)
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(COMPILER_IS_MSVC TRUE)
   endif()
   
   # Basic debug options
@@ -49,7 +47,6 @@ function(set_default_debug_options)
       -g3                     # Maximum debug information
       -fno-omit-frame-pointer # Keep frame pointer for better debugging
     )
-    
     if(ARG_DISABLE_OPTIMIZATION)
       list(APPEND DEBUG_OPTIONS -O0)  # No optimization
     else()
@@ -69,23 +66,6 @@ function(set_default_debug_options)
       elseif(COMPILER_IS_CLANG)
         list(APPEND DEBUG_OPTIONS -Wno-unused-parameter)     # Clang-specific
       endif()
-    endif()
-    
-  elseif(COMPILER_IS_MSVC)
-    # MSVC-specific flags
-    set(DEBUG_OPTIONS 
-      /Zi        # Produce complete debugging information
-      /Od        # Disable optimization
-      /RTC1      # Enable run-time error checks
-      /sdl       # Enable additional security checks
-      /MP        # Multi-processor compilation
-    )
-    
-    if(ARG_STRICT_WARNINGS)
-      list(APPEND DEBUG_OPTIONS
-        /W4        # Warning level 4
-        /WX        # Treat warnings as errors
-      )
     endif()
   endif()
   
@@ -122,47 +102,7 @@ function(set_default_debug_options)
       message(STATUS "${message_prefix}: Enabling Thread Sanitizer")
     endif()
   endif()
-  
-  # Handle profiling
-  if(ARG_ENABLE_PROFILING)
-    if(COMPILER_IS_GCC OR COMPILER_IS_CLANG)
-      list(APPEND DEBUG_OPTIONS -pg)  # Generate profiling information
-    elseif(COMPILER_IS_MSVC)
-      list(APPEND DEBUG_OPTIONS /PROFILE)
-    endif()
-    message(STATUS "${message_prefix}: Enabling profiling")
-  endif()
-  
-  # Apply the options
-  if(scope_type)
-    # Apply to specific target
-    target_compile_options(${ARG_TARGET} PRIVATE
-      $<$<CONFIG:Debug>:${DEBUG_OPTIONS}>
-    )
-    
-    if(SANITIZER_FLAGS)
-      target_compile_options(${ARG_TARGET} PRIVATE
-        $<$<CONFIG:Debug>:${SANITIZER_FLAGS}>
-      )
-      target_link_options(${ARG_TARGET} PRIVATE
-        $<$<CONFIG:Debug>:${SANITIZER_FLAGS}>
-      )
-    endif()
-  else()
-    # Apply globally
-    add_compile_options(
-      $<$<CONFIG:Debug>:${DEBUG_OPTIONS}>
-    )
-    
-    if(SANITIZER_FLAGS)
-      add_compile_options(
-        $<$<CONFIG:Debug>:${SANITIZER_FLAGS}>
-      )
-      add_link_options(
-        $<$<CONFIG:Debug>:${SANITIZER_FLAGS}>
-      )
-    endif()
-  endif()
-  
-  message(STATUS "${message_prefix}: Debug options configured")
+
+  list(APPEND DEBUG_OPTIONS -pg)  # Generate profiling information
+
 endfunction()
