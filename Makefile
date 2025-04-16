@@ -1,8 +1,11 @@
 # Makefile for building the project with CMake
 # This file provides convenience targets
 
-BUILD_DIR := build
-BINARY_DIR := bin
+BINARY_DIR ?= bin
+BUILD_DIR ?= build
+BUILD_TYPE ?= Debug
+ARCH ?= native
+TARGET ?= all
 
 .PHONY: all debug release clean test
 
