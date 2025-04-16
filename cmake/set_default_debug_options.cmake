@@ -25,13 +25,6 @@ function(set_default_debug_options)
     if(NOT TARGET ${ARG_TARGET})
       message(FATAL_ERROR "set_default_debug_options: Target '${ARG_TARGET}' does not exist")
     endif()
-    
-    set(scope_type TARGET ${ARG_TARGET})
-    set(message_prefix "Target ${ARG_TARGET}")
-  else()
-    set(scope_type "")
-    set(message_prefix "Global")
-  endif()
   
   # Detect compiler
   if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
