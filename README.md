@@ -23,9 +23,22 @@ Project/
 │   ├── set_default_release_options.cmake # Set release compiler/linker options
 │   ├── strip_target.cmake             # Function to strip binaries
 │   └── tidy-checks.cmake              # Function for clang-tidy configuration
-├── include/                           # Header files directory
-├── src/                               # Source files directory
-└── test/                              # Test files directory
+├── include/                            
+├── src/                               
+|    ├── CMakeLists.txt         # CMake for src/ configurations 
+|    ├── remote/    # Target
+|    |      ├── test/
+|    |      ├── include/
+|    |      └── CMakeLists.txt                  # Cmake for remote target configurations
+|    ├── local/     # Target
+|    |      ├── test/
+|    |      ├── include/
+|    |      └── CMakeLists.txt                  # CMake for local Target configuration (possible python)
+|    └── common     # Target
+|           ├── test/
+|           ├── include/
+|           └── CMakeLists.txt                  # CMake for common Target configurations
+└── test/                # Test files directory
 ```
 
 ## Basic Usage
@@ -33,17 +46,22 @@ Project/
 ### Building the Project
 
 ```bash
-# Default build (Debug)
-make
-
-# Debug build explicitly
+# Build in debug mode (default arch=native)
 make debug
 
-# Release build
+# Build in release mode
 make release
 
-# Clean build artifacts
+# Build with a specific architecture (e.g., x86-64)
+make release ARCH=x86-64
+
+# Clean or wipe build folder
 make clean
+make distclean
+
+# Install if your CMakeLists has install() commands
+make install
+
 ```
 
 ### Running Tests
@@ -52,11 +70,6 @@ make clean
 make test
 ```
 
-### Cross-Compilation Example
-
-```bash
-make arm
-```
 
 ## CMake Functions
 
