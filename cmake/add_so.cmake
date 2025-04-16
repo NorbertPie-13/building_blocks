@@ -3,14 +3,15 @@ function(add_so)
   set(options "")
   set(oneValueArgs TARGET OUTPUT_NAME VERSION SOVERSION HEADER_DEST)
   set(multiValueArgs SOURCES INCLUDES LINK_LIBS DEFINES OPTIONS)
-  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}"
+                        ${ARGN})
 
   # Support legacy syntax: unnamed first arg as target
   if(NOT ARG_TARGET AND ARGV0)
     set(ARG_TARGET ${ARGV0})
   endif()
 
-  if (NOT HEADER_DEST)
+  if(NOT HEADER_DEST)
     set(ARG_HEADER_DEST include)
   endif()
 
@@ -18,7 +19,8 @@ function(add_so)
   if(NOT ARG_TARGET)
     message(FATAL_ERROR "add_so: TARGET not specified")
   elseif(NOT ARG_SOURCES)
-    message(FATAL_ERROR "add_so: SOURCES not specified for target ${ARG_TARGET}")
+    message(
+      FATAL_ERROR "add_so: SOURCES not specified for target ${ARG_TARGET}")
   endif()
 
   # Add shared library
@@ -27,7 +29,8 @@ function(add_so)
 
   # Set target properties
   if(ARG_OUTPUT_NAME)
-    set_target_properties(${ARG_TARGET} PROPERTIES OUTPUT_NAME ${ARG_OUTPUT_NAME})
+    set_target_properties(${ARG_TARGET} PROPERTIES OUTPUT_NAME
+                                                   ${ARG_OUTPUT_NAME})
   endif()
 
   if(ARG_VERSION)
@@ -63,9 +66,6 @@ function(add_so)
     target_compile_options(${ARG_TARGET} PRIVATE ${ARG_OPTIONS})
   endif()
 
-  # Install
-  # install(TARGETS ${ARG_TARGET}
-  #   LIBRARY DESTINATION lib
-  #   PUBLIC_HEADER DESTINATION ${ARG_HEADER_DEST}
-  # )
+  # Install install(TARGETS ${ARG_TARGET} LIBRARY DESTINATION lib PUBLIC_HEADER
+  # DESTINATION ${ARG_HEADER_DEST} )
 endfunction()

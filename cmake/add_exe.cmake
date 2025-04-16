@@ -3,7 +3,8 @@ function(add_exe)
   set(options "")
   set(oneValueArgs TARGET OUTPUT_NAME OUTPUT_PLACE)
   set(multiValueArgs SOURCES INCLUDES LINK_LIBS DEFINES OPTIONS)
-  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}"
+                        ${ARGN})
 
   # Legacy support: unnamed first argument = target
   if(NOT ARG_TARGET AND ARGV0)
@@ -11,7 +12,9 @@ function(add_exe)
   endif()
 
   # Default values
-  set(ARG_OUTPUT_PLACE "${ARG_OUTPUT_PLACE}" CACHE STRING "Executable output directory")
+  set(ARG_OUTPUT_PLACE
+      "${ARG_OUTPUT_PLACE}"
+      CACHE STRING "Executable output directory")
   if(NOT ARG_OUTPUT_PLACE)
     set(ARG_OUTPUT_PLACE bin)
   endif()
@@ -20,7 +23,8 @@ function(add_exe)
   if(NOT ARG_TARGET)
     message(FATAL_ERROR "add_exe: TARGET not specified")
   elseif(NOT ARG_SOURCES)
-    message(FATAL_ERROR "add_exe: SOURCES not specified for target ${ARG_TARGET}")
+    message(
+      FATAL_ERROR "add_exe: SOURCES not specified for target ${ARG_TARGET}")
   endif()
 
   # Add executable
@@ -28,7 +32,8 @@ function(add_exe)
   message(STATUS "🔨 Added executable target: ${ARG_TARGET}")
   message(STATUS "    Sources: ${ARG_SOURCES}")
   if(ARG_OUTPUT_NAME)
-    set_target_properties(${ARG_TARGET} PROPERTIES OUTPUT_NAME ${ARG_OUTPUT_NAME})
+    set_target_properties(${ARG_TARGET} PROPERTIES OUTPUT_NAME
+                                                   ${ARG_OUTPUT_NAME})
     message(STATUS "    Output name: ${ARG_OUTPUT_NAME}")
   endif()
 
@@ -52,8 +57,6 @@ function(add_exe)
     target_compile_options(${ARG_TARGET} PRIVATE ${ARG_OPTIONS})
   endif()
 
-  # # Install
-  # install(TARGETS ${ARG_TARGET}
-  #   RUNTIME DESTINATION ${ARG_OUTPUT_PLACE}
-  # )
+  # # Install install(TARGETS ${ARG_TARGET} RUNTIME DESTINATION
+  # ${ARG_OUTPUT_PLACE} )
 endfunction()

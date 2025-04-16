@@ -1,8 +1,10 @@
 function(install_target)
   set(options OPTIONAL EXCLUDE_FROM_ALL)
-  set(oneValueArgs TARGET DESTINATION COMPONENT RENAME EXPORT REMOTE_DESTINATION)
+  set(oneValueArgs TARGET DESTINATION COMPONENT RENAME EXPORT
+                   REMOTE_DESTINATION)
   set(multiValueArgs CONFIGURATIONS PERMISSIONS)
-  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}"
+                        ${ARGN})
 
   if(NOT ARG_TARGET)
     message(FATAL_ERROR "install_target: TARGET not specified")
@@ -21,7 +23,8 @@ function(install_target)
     list(APPEND install_params RUNTIME)
   elseif(target_type STREQUAL "STATIC_LIBRARY")
     list(APPEND install_params ARCHIVE)
-  elseif(target_type STREQUAL "SHARED_LIBRARY" OR target_type STREQUAL "MODULE_LIBRARY")
+  elseif(target_type STREQUAL "SHARED_LIBRARY" OR target_type STREQUAL
+                                                  "MODULE_LIBRARY")
     list(APPEND install_params LIBRARY)
   else()
     list(APPEND install_params RUNTIME)
@@ -54,26 +57,36 @@ function(install_target)
       endif()
     endif()
 
-    if(target_type STREQUAL "SHARED_LIBRARY" OR target_type STREQUAL "MODULE_LIBRARY")
-      set(installed_name ${CMAKE_SHARED_LIBRARY_PREFIX}${installed_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
+    if(target_type STREQUAL "SHARED_LIBRARY" OR target_type STREQUAL
+                                                "MODULE_LIBRARY")
+      set(installed_name
+          ${CMAKE_SHARED_LIBRARY_PREFIX}${installed_name}${CMAKE_SHARED_LIBRARY_SUFFIX}
+      )
     elseif(target_type STREQUAL "STATIC_LIBRARY")
-      set(installed_name ${CMAKE_STATIC_LIBRARY_PREFIX}${installed_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
+      set(installed_name
+          ${CMAKE_STATIC_LIBRARY_PREFIX}${installed_name}${CMAKE_STATIC_LIBRARY_SUFFIX}
+      )
     elseif(target_type STREQUAL "EXECUTABLE")
-      set(installed_name ${CMAKE_EXECUTABLE_PREFIX}${installed_name}${CMAKE_EXECUTABLE_SUFFIX})
+      set(installed_name
+          ${CMAKE_EXECUTABLE_PREFIX}${installed_name}${CMAKE_EXECUTABLE_SUFFIX})
     endif()
 
     set(deploy_target_name deploy_${ARG_TARGET})
     if(NOT TARGET ${deploy_target_name})
-      add_custom_target(${deploy_target_name}
+      add_custom_target(
+        ${deploy_target_name}
         COMMENT "Deploying ${ARG_TARGET} to ${ARG_REMOTE_DESTINATION}"
-        COMMAND scp -r ${CMAKE_INSTALL_PREFIX}/${ARG_DESTINATION}/${installed_name} ${ARG_REMOTE_DESTINATION}
-        DEPENDS ${ARG_TARGET}
-      )
+        COMMAND
+          scp -r ${CMAKE_INSTALL_PREFIX}/${ARG_DESTINATION}/${installed_name}
+          ${ARG_REMOTE_DESTINATION}
+        DEPENDS ${ARG_TARGET})
       if(NOT TARGET deploy_all)
         add_custom_target(deploy_all)
       endif()
       add_dependencies(deploy_all ${deploy_target_name})
-      message(STATUS "Created deployment target '${deploy_target_name}' for ${ARG_TARGET}")
+      message(
+        STATUS
+          "Created deployment target '${deploy_target_name}' for ${ARG_TARGET}")
     endif()
   endif()
 
@@ -82,10 +95,12 @@ function(install_target)
     string(REGEX REPLACE "^release/" "" rel_path "${ARG_DESTINATION}")
     set(dir_target ensure_dir_${ARG_TARGET})
     if(NOT TARGET ${dir_target})
-      add_custom_target(${dir_target} ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${ARG_DESTINATION}
+      add_custom_target(
+        ${dir_target} ALL COMMAND ${CMAKE_COMMAND} -E make_directory
+                                  ${CMAKE_INSTALL_PREFIX}/${ARG_DESTINATION})
+      install(
+        CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target ${dir_target})"
       )
-      install(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target ${dir_target})")
     endif()
   endif()
 
