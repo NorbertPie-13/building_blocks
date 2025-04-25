@@ -1,0 +1,64 @@
+= Building Blocks 
+
+Feedback
+
+1. Accept build type and architecture as arguments and not targets. Considered passing a "build", "lint", and "test" jobs that pass arguments to CMake
+1. Format with cmake-format.
+1. In toplevel set global info such as version, project, global output Directory.
+1. In child directories include additional CMakeLists which include target specfic.
+1. Include "./share/buildroot/toolchainfile.cmake" from buildroot or ninja
+1. Break target generation out to each individual CMake
+1. Strip add -s and -0s on release binaries
+1. add tests on individual targets
+1. set where to install in a cmake variable
+1. Look at Unity or CUnit
+1. Install should be done as an individual target cmake file.
+1. Release should be stripped.
+1. Tidy checks should be .clang-tidy and .cppcheck files and set CMAKE_C_CLANG_TIDY and CMAKE_C_CPPCHECK
+1. Add linting targets for various other linters
+1. Add running pytest or any sort of integration testing
+
+
+== Structure
+
+Parent Directory
+    |
+    |--- CMakeLists.txt
+    |
+    |---cmake
+          |
+          | -- default release function
+          | -- default debug options
+          | -- install target
+          | -- add so
+          | -- add exe
+          | -- add test
+          | -- add all tests
+          | -- buildsystem  
+          |
+          | --- toolchains
+                    |
+                    |---- arm x86-64
+
+
+== Default Release function
+
+Add all default options. Should strip all symbols and reduce bloat. This should be done for multiple targets if needed.
+Default release tags should include the following:
+
+    - 03
+    - Declare NDEBUG
+    - '-0s' and '-s'
+
+== Default Debug function
+
+== installing a target
+
+== add_so
+
+== add_exe
+
+== add_tests
+
+== buildsystem
+

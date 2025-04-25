@@ -12,8 +12,8 @@
 # )
 function(set_default_release_options)
   # Define the options and their values
-  set(options LTO PGO_GENERATE STRIP_SYMBOLS WITH_DEBUG_INFO ENABLE_ASSERTS)
-  set(oneValueArgs TARGET OPTIMIZATION_LEVEL PGO_USE)
+  set(options TARGET WITH_DEBUG_INFO)
+  set(oneValueArgs TARGET WITH_DEBUG_INFO)
   set(multiValueArgs "")
   
   # Parse the arguments
@@ -63,30 +63,10 @@ function(set_default_release_options)
     elseif(COMPILER_IS_CLANG)
         list(APPEND RELEASE_LINK_OPTIONS -Wl,--gc-sections)  # Linux/other
     endif()
+    set(ONLY_RELEASE True)
 
+    strip_target(${TARGET} ${ONLY_RELEASE} )
     
-    # Handle Link-Time Optimization
-    if(ARG_LTO)
-      if(COMPILER_IS_GCC)
-        list(APPEND RELEASE_OPTIONS -flto)
-        list(APPEND RELEASE_LINK_OPTIONS -flto)
-      elseif(COMPILER_IS_CLANG)
-        list(APPEND RELEASE_OPTIONS -flto=thin)
-        list(APPEND RELEASE_LINK_OPTIONS -flto=thin)
-      endif()
-      message(STATUS "${message_prefix}: Enabling Link-Time Optimization")
-    endif()
-    
-    # Handle Profile-Guided Optimization
-    if(ARG_PGO_GENERATE)
-      list(APPEND RELEASE_OPTIONS -fprofile-generate)
-      list(APPEND RELEASE_LINK_OPTIONS -fprofile-generate)
-      message(STATUS "${message_prefix}: Enabling PGO (generation phase)")
-    elseif(ARG_PGO_USE)
-      list(APPEND RELEASE_OPTIONS -fprofile-use=${ARG_PGO_USE})
-      list(APPEND RELEASE_LINK_OPTIONS -fprofile-use=${ARG_PGO_USE})
-      message(STATUS "${message_prefix}: Enabling PGO (use phase) with profile: ${ARG_PGO_USE}")
-    endif()
   
   message(STATUS "${message_prefix}: Release options configured")
 endfunction()
